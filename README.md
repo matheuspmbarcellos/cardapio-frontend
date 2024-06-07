@@ -1,30 +1,83 @@
-# React + TypeScript + Vite
+# Cardápio Digital
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O Cardápio Digital é uma aplicação web moderna que permite aos usuários visualizar itens disponíveis com seus respectivos preços e cadastrar novos produtos de forma fácil e rápida.
 
-Currently, two official plugins are available:
+## Tecnologias Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Vite
+- React
+- TypeScript
+- @tanstack/react-query
 
-## Expanding the ESLint configuration
+## Instalação
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Certifique-se de ter o Node.js e o npm instalados. Clone o repositório e execute o seguinte comando:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Como Usar
+### Desenvolvimento
+
+Para iniciar o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+Isso iniciará o servidor de desenvolvimento do Vite. 
+
+Abra http://localhost:5173 no seu navegador para ver o projeto.
+
+### Produção
+
+Para compilar e construir o projeto para produção:
+
+```bash
+npm run build
+```
+
+Isso criará uma versão otimizada do seu aplicativo para produção na pasta dist.
+
+## Funcionalidades Principais
+- Listar itens do cardápio (GET: utilizando react query - useQuery)
+```bash
+const fetchData = async (): AxiosPromise<FoodData[]>=> {
+    const response = axios.get(API_URL + '/food')
+    return response;
+}
+
+export function useFoodData() {
+    const query = useQuery({
+        queryFn: fetchData,
+        queryKey: ['food-data'],
+        retry: 2
+    }) 
+
+    return {
+        ...query,
+        data: query.data?.data
+    }
+}
+```
+- Incluir item no cardápio (POST: Utilizando react query - useMutation)
+```bash
+const postData = async (data: FoodData): AxiosPromise<unknown>=> {
+    const response = axios.post(API_URL + '/food', data)
+    return response;
+}
+
+export function useFoodDataMutate() {
+    const queryClient = useQueryClient();
+    const mutate = useMutation({
+        mutationFn: postData,
+        retry: 2,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['food-data']})
+        }
+    }) 
+
+    return mutate;
+}
+```

@@ -2,7 +2,7 @@ import { FoodData } from './../interface/FoodData';
 import axios, { AxiosPromise } from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const API_URL = 'http://localhost:8080'
+const API_URL = 'http://localhost:8083'
 
 const postData = async (data: FoodData): AxiosPromise<unknown>=> {
     const response = axios.post(API_URL + '/food', data)
